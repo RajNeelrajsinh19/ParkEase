@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ParkEase — Smart Parking Management &amp; Slot Booking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <div class="navwrap">
+    <div class="logo"><div class="logo-mark">P</div>ParkEase</div>
+    <nav class="links" id="navLinks">
+      <button class="navlink active" data-nav="home">Home</button>
+      <button class="navlink" data-nav="book">Find &amp; Book</button>
+      <button class="navlink" data-nav="bookings">My Bookings</button>
+      <button class="navlink hidden" data-nav="admin" id="adminNavBtn">Admin</button>
+    </nav>
+    <div class="nav-right">
+      <div class="role-pill" id="rolePill"><span class="dot" id="roleDot"></span><span id="rolePillText">Guest</span></div>
+      <button class="btn btn-ghost btn-sm" id="loginBtn">Sign in</button>
+      <button class="hamburger" id="hamburgerBtn">☰</button>
+    </div>
+  </div>
+</header>
+
+<!-- HOME -->
+<section id="view-home">
+  <div class="hero lane-bg">
+    <div class="section hero-grid">
+      <div>
+        <div class="eyebrow">Smart Parking, Solved</div>
+        <h1 style="margin-top:16px;">Stop circling the block.<br><span>Book your slot</span> before you arrive.</h1>
+        <p class="lead">ParkEase tracks every slot across your campus or facility in real time, so drivers reserve ahead and pay securely, while a single operator account runs the entire lot from one live dashboard.</p>
+        <div class="hero-ctas">
+          <button class="btn btn-primary" data-nav="book">Find a slot →</button>
+          <button class="btn btn-ghost" id="heroSignInBtn">Sign in with email</button>
+        </div>
+        <div class="hero-stats">
+          <div class="hstat"><b id="statTotal">0</b><span>Total Slots</span></div>
+          <div class="hstat"><b id="statAvail" style="color:var(--available)">0</b><span>Available Now</span></div>
+          <div class="hstat"><b id="statOcc" style="color:var(--occupied)">0</b><span>Occupied</span></div>
+          <div class="hstat"><b id="statPct">0%</b><span>Live Occupancy</span></div>
+        </div>
+      </div>
+      <div class="lot-visual">
+        <div class="lv-head">
+          <span class="lv-title">LIVE LOT · ZONE A</span>
+          <span class="live-badge"><span class="pulse"></span>LIVE</span>
+        </div>
+        <div class="mini-grid" id="miniGrid"></div>
+        <div class="lv-road"></div>
+        <div class="mini-grid" id="miniGrid2"></div>
+        <div class="lv-legend">
+          <div class="li"><span class="sw" style="background:var(--available)"></span>Open</div>
+          <div class="li"><span class="sw" style="background:var(--occupied)"></span>Occupied</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="features section">
+    <div class="section-head">
+      <div class="eyebrow">Why ParkEase</div>
+      <h2>Everything a modern lot needs, in one system.</h2>
+      <p>Built around real problems facilities face: unknown availability, manual entry logs, no-shows, and zero visibility for operators. Every feature below answers one of them.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card"><div class="feat-ico">◱</div><h4>Real-time slot map</h4><p>Every slot updates live as drivers reserve, check in, and check out — colour-coded by zone and status.</p></div>
+      <div class="feat-card"><div class="feat-ico">✉</div><h4>Email sign-in</h4><p>Every driver signs in with their own email account. Bookings and history stay tied to that account.</p></div>
+      <div class="feat-card"><div class="feat-ico">₹</div><h4>Secure checkout</h4><p>Reservations are confirmed only after payment — UPI or card — completes successfully.</p></div>
+      <div class="feat-card"><div class="feat-ico">▦</div><h4>QR entry ticket</h4><p>A unique booking ID and scannable-style ticket is issued the moment payment clears, ready for the gate.</p></div>
+      <div class="feat-card"><div class="feat-ico">◧</div><h4>Live checkout &amp; billing</h4><p>End a session early and the fare recalculates automatically for the time actually used.</p></div>
+      <div class="feat-card"><div class="feat-ico">▤</div><h4>Restricted admin access</h4><p>Only the verified operator account can open the admin dashboard and manage the lot.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- BOOK -->
+<section id="view-book" class="hidden">
+  <div class="book-section section">
+    <div class="section-head">
+      <div class="eyebrow">Find &amp; Book</div>
+      <h2>Pick a zone, pick a slot.</h2>
+      <p>Green means go. Tap any open slot to start a reservation.</p>
+    </div>
+    <div id="bookNotice"></div>
+    <div class="filter-row">
+      <div class="filter-group" id="zoneTabsHolder"></div>
+      <div class="filter-group" id="typeChipsHolder">
+        <button class="chip active" data-type="all">All vehicles</button>
+        <button class="chip" data-type="Car">Car</button>
+        <button class="chip" data-type="Bike">Bike</button>
+        <button class="chip" data-type="EV">EV</button>
+      </div>
+    </div>
+    <div class="slot-panel">
+      <div class="zone-caption">
+        <h3 id="zoneCaptionTitle">Zone A · Ground Floor</h3>
+        <span id="zoneCaptionRate">₹30/hr</span>
+      </div>
+      <div class="slot-grid" id="slotGrid"></div>
+      <div class="legend-row" style="margin-top:20px;">
+        <div class="li"><span class="sw" style="background:var(--available)"></span>Available</div>
+        <div class="li"><span class="sw" style="background:var(--reserved)"></span>Reserved</div>
+        <div class="li"><span class="sw" style="background:var(--occupied)"></span>Occupied</div>
+        <div class="li"><span class="sw" style="background:var(--maintenance)"></span>Maintenance</div>
+        <div class="li">⚡ EV charging bay</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BOOKINGS -->
+<section id="view-bookings" class="hidden">
+  <div class="bookings-section section">
+    <div class="section-head">
+      <div class="eyebrow">My Bookings</div>
+      <h2>Your reservations.</h2>
+      <p>Start a session when you arrive, and end it early to pay only for time used.</p>
+    </div>
+    <div id="bookingsList"></div>
+  </div>
+</section>
+
+<!-- ADMIN -->
+<section id="view-admin" class="hidden">
+  <div class="admin-section section">
+    <div class="section-head">
+      <div class="eyebrow">Operator Dashboard</div>
+      <h2>Run the lot.</h2>
+      <p>Live occupancy, revenue, and manual slot controls — visible only to the verified admin account.</p>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi"><b id="kpiSlots">0</b><span>Total bookings</span></div>
+      <div class="kpi"><b id="kpiOcc" style="color:var(--accent)">0%</b><span>Confirmed bookings</span></div>
+      <div class="kpi"><b id="kpiRev" style="color:var(--available)">0</b><span>Available slots</span></div>
+      <div class="kpi"><b id="kpiUsers" style="color:var(--reserved)">0</b><span>Booked slots</span></div>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <h4>Payments received</h4>
+      <div class="notice" style="margin-bottom:16px;">💡 This dashboard uses demo payment records from ParkEase bookings. UPI and card payment flows are simulated on the frontend.</div>
+      <div class="kpi-row" style="margin-bottom:0;">
+        <div class="kpi"><b id="kpiUpiTotal" style="color:var(--available)">₹0</b><span>Collected via UPI</span></div>
+        <div class="kpi"><b id="kpiCardTotal" style="color:var(--reserved)">₹0</b><span>Collected via card</span></div>
+      </div>
+    </div>
+
+    <div class="admin-grid">
+      <div class="card"><h4>Occupancy by zone</h4><div id="zoneBars"></div></div>
+      <div class="card">
+        <h4>Recent bookings</h4>
+        <table><thead><tr><th>ID</th><th>Slot</th><th>Driver</th><th>Method</th><th>Amount</th><th>Status</th></tr></thead><tbody id="recentBookingsBody"></tbody></table>
+      </div>
+    </div>
+    <div class="card">
+      <h4>All slots — manual override</h4>
+      <div class="admin-slot-table">
+        <table><thead><tr><th>Code</th><th>Zone</th><th>Type</th><th>Status</th><th></th></tr></thead><tbody id="adminSlotBody"></tbody></table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="section foot-row">
+    <div>ParkEase — Smart Parking Management &amp; Slot Booking System · College Demo Build</div>
+    <div class="mono" style="color:var(--text-faint)">Frontend prototype · localStorage-backed demo · no backend attached</div>
+  </div>
+</footer>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+    <script src="js/script.js" defer></script>
+  </body>
+</html>
+
